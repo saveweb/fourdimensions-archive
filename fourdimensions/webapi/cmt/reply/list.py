@@ -48,7 +48,7 @@ class reply_list:
         r.raise_for_status()
 
         response_json: dict = r.json()
-        assert response_json.get('code') == 0, response_json.get('msg')
+        assert response_json.get('code', -1) == 0, response_json.get('msg')
         if response_json.get('data', {}).get('data'):
             return response_json
         

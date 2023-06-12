@@ -1,0 +1,117 @@
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "GroupInfo": {
+            "group_id": 763842,
+            "uid": 3043923696030638,
+            "name": "50r以内可以约到哪些白菜？推荐理由是？",
+            "intro": "太想要糕糕了。。。各位有没有推荐的画师啊。。",
+            "pics": "",
+            "work": "",
+            "member_num": 249,
+            "post_num": 375,
+            "ctime": 1633578002,
+            "ptime": 1686489686,
+            "editor_status": 50,
+            "tag_list": [
+                {
+                    "tag_id": 17111,
+                    "tag_name": "约稿",
+                    "cuid": 3043923696030638,
+                    "type": "tag",
+                    "cover": "https://p3-bcy-sign.bcyimg.com/bcy-static/277fcb8b123143b78c5fb8d31eeee8ff~noop.image?x-expires=1702667973&x-signature=IpbNklhdcVZ0Cx84wlfPCNpSWKs%3D",
+                    "status": 0,
+                    "relative_wid": 0
+                }
+            ],
+            "multi": [],
+            "props": [],
+            "is_del": 0,
+            "at_users": [],
+            "can_del": false,
+            "is_member": false,
+            "is_creator": false,
+            "verify_time": 1633578136
+        },
+        "members": [
+            {
+                "uid": 317089941299443,
+                "uname": "静言思之.",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/8309fb1a779b4036b6a1359b72879728~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=IeE1GdbsQIpluefBPGVBfpHCDxw%3D",
+                "avatar_path": "banciyuan/8309fb1a779b4036b6a1359b72879728"
+            },
+            {
+                "uid": 3307798395367885,
+                "uname": "桃花源鸭",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/effba149fd214efe86c0ac8bc7303ddf~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=kV30eMVl95stEmKKCkDAyMUbKoM%3D",
+                "avatar_path": "banciyuan/effba149fd214efe86c0ac8bc7303ddf"
+            },
+            {
+                "uid": 3690413441689005,
+                "uname": "当然不行废柴别惦记你谷了",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/0cb6186c15044edf86fa7f9a9d3dbf8a~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=kHcRFDBLxeePv0MU0bd32QcSSxg%3D",
+                "avatar_path": "banciyuan/0cb6186c15044edf86fa7f9a9d3dbf8a"
+            },
+            {
+                "uid": 105011560405,
+                "uname": "扶希FX",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/4094fe7cde9a4afbb89b0c3ba0072d7e~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=aFVda5Dl3sBDHkYaK9YjYrqxhac%3D",
+                "avatar_path": "banciyuan/4094fe7cde9a4afbb89b0c3ba0072d7e"
+            },
+            {
+                "uid": 3043923696030638,
+                "uname": "阿篽yuyu",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/21d91129244f48c998103e4da73a59c6~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=JKCOYhDz5SjdwvRoyI1RQxQcucI%3D",
+                "avatar_path": "banciyuan/21d91129244f48c998103e4da73a59c6"
+            },
+            {
+                "uid": 1082369103888836,
+                "uname": "日常恋爱脑",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/b117a19874944470b6f3d477487e2826~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=u2HkoDol0mjCW2w773lrokS%2BO7c%3D",
+                "avatar_path": "banciyuan/b117a19874944470b6f3d477487e2826"
+            },
+            {
+                "uid": 3777554424795668,
+                "uname": "宣行琮厨",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/a79b5b3452f0474aa26e06f814a96cce~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=DRclOrxYqFmrJGx%2F7G7iOFRtsrA%3D",
+                "avatar_path": "banciyuan/a79b5b3452f0474aa26e06f814a96cce"
+            },
+            {
+                "uid": 892429271565876,
+                "uname": "冬木川",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/d5be77522ef3427e8b4a2d1971e34fe0~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=euw8CzsNM1roUvb6KuOuXYdxtQA%3D",
+                "avatar_path": "banciyuan/d5be77522ef3427e8b4a2d1971e34fe0"
+            },
+            {
+                "uid": 932864345513118,
+                "uname": "什锦水果糖a",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/cc48087e64a14fa4904821851743bca8~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=n4LPpPciUaWjVHZKlHWe55%2FMkSw%3D",
+                "avatar_path": "banciyuan/cc48087e64a14fa4904821851743bca8"
+            },
+            {
+                "uid": 3144243213513639,
+                "uname": "黑亻七公主",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/6599fbec79ec495e8a454b20946d2d84~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=HvkkFo%2FZT8YHM0BJonSx4Ykj63Y%3D",
+                "avatar_path": "banciyuan/6599fbec79ec495e8a454b20946d2d84"
+            },
+            {
+                "uid": 1983123990785608,
+                "uname": "早点睡-",
+                "value_user": 0,
+                "avatar": "https://p3-bcy-sign.bcyimg.com/banciyuan/c66e8e9b83254098a4f499697005977f~tplv-banciyuan-amiddle.image?x-expires=1702667973&x-signature=%2FH6bmdKxGi2iBaphh2WxiwgPQiE%3D",
+                "avatar_path": "banciyuan/c66e8e9b83254098a4f499697005977f"
+            }
+        ]
+    }
+}
