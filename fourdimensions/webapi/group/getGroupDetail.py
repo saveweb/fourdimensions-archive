@@ -3,9 +3,9 @@
 import requests
 from typing import List
 
-class reply_list:
+class getGroupDetail:
     @staticmethod
-    def get(gid, sess: requests.Session = None):
+    def get(gid:int, sess: requests.Session = None):
         """ query https://bcy.net/apiv3/group/getGroupDetail
         
         Args:
@@ -34,5 +34,5 @@ class reply_list:
 
 if __name__ == "__main__":
     sess = requests.session()
-    reply = reply_list.get(763842, sess=sess)
+    reply = getGroupDetail.get(763842, sess=sess)
     print(reply)
