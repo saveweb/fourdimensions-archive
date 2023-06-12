@@ -17,13 +17,14 @@ class Detail:
         real_params = {
             "data": enced_data,
         }
-        r = sess.post(url, data=real_params, headers=DEFAULT_HEADER)
+        r = sess.post(url, data=real_params)
         r.raise_for_status()
         return r.json()
 
 
 if __name__ == "__main__":
     sess = requests.Session()
+    sess.headers.update(DEFAULT_HEADER)
     detail = Detail.get(
             item_id=7242590634538703933,
             sess=sess,
