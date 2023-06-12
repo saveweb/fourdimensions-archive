@@ -32,18 +32,18 @@ class selfPosts:
         return since
 
     @staticmethod
-    def get_all_item_ids(uid: Union[str, int], sess: requests.Session = None) -> List[str]:
+    def get_all_item_ids(uid: Union[str, int], sess: requests.Session = None) -> List[int]:
         """ 提取用户的全部 item_id """
 
         since = 0
-        item_ids = [] # type: list[str]
+        item_ids: List[int] = []
         while True:
             print(since, end='\r')
             data = selfPosts.get(uid, since, sess)
             if not data['data'].get('items'):
                 break
             since = selfPosts.find_newest_since(data)
-            item_ids.extend([item['item_detail']["item_id"] for item in data['data']['items']])
+            item_ids.extend([int(item['item_detail']["item_id"]) for item in data['data']['items']])
         assert len(item_ids) == len(set(item_ids))
 
         return item_ids
