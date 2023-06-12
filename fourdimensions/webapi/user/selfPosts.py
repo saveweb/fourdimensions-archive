@@ -1,10 +1,11 @@
 import requests
-from typing import List
+from typing import List, Union
 
 class selfPosts:
 
     @staticmethod
-    def get(uid, since: int = 0, sess: requests.Session = None) -> dict:
+    def get(uid: Union[int, str], since: int = 0, sess: requests.Session = None) -> dict:
+        assert isinstance(uid, (str, int))
         """ query https://bcy.net/apiv3/user/selfPosts 
         
         Args:
@@ -31,8 +32,9 @@ class selfPosts:
         return since
 
     @staticmethod
-    def get_all_item_ids(uid, sess: requests.Session = None) -> List[str]:
+    def get_all_item_ids(uid: Union[str, int], sess: requests.Session = None) -> List[str]:
         """ 提取用户的全部 item_id """
+
         since = 0
         item_ids = [] # type: list[str]
         while True:
@@ -48,5 +50,5 @@ class selfPosts:
 
 if __name__ == "__main__":
     sess = requests.Session()
-    item_ids = selfPosts.get_all_item_ids(uid=int(input("uid: ")), sess=sess)
+    item_ids = selfPosts.get_all_item_ids(uid=1398173406082551, sess=sess)
     print(item_ids)
