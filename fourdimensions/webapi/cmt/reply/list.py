@@ -11,8 +11,6 @@ from fourdimensions.webapi.const import DEFAULT_HEADER
 
 class reply_list:
 
-    class PageOutOfRangeError(Exception):
-        pass
     class NoCommentError(Exception):
         pass
 
@@ -30,9 +28,7 @@ class reply_list:
             r.json()
 
         Raises:
-            reply_list.NoCommentError: 该动态没有评论 （当 page == 1 且没有评论时）
-            reply_list.PageOutOfRangeError: 评论页码超出范围 （当 page > 1 且该页没有评论时）
-
+            reply_list.NoCommentError: 未找到评论
         """
 
         assert sort in ['time', 'hot']
@@ -52,13 +48,9 @@ class reply_list:
         if response_json.get('data', {}).get('data'):
             return response_json
         
-        if page == 1:
-            logging.info(f"该 item 没有评论: {r.text}")
-            raise reply_list.NoCommentError("该 item 没有评论")
-        
-        logging.info(f"页码超出范围: {r.text}")
-        raise reply_list.PageOutOfRangeError("页码超出范围")
-        
+
+        logging.info(f"{item_id} 的第 {page} 页没有评论: {r.text}")
+        raise reply_list.NoCommentError("{item_id} 的第 {page} 页没有评论")
 
 
 if __name__ == "__main__":
@@ -78,14 +70,15 @@ if __name__ == "__main__":
         replies: List[dict] = []
         for page in count(1):
             try:
-                logging.info(f"正在爬取第 {page} 页评论")
+                print(f"正在爬取第 {page} 页评论")
                 reply = reply_list.get(7240818866773826618, sess=sess, page=page)
                 replies.append(reply)
             except reply_list.NoCommentError:
-                pass
-            except reply_list.PageOutOfRangeError:
-                logging.info("评论爬取完毕")
-                break
+                if page == 1:
+                    print('此页无内容')
+                else:
+                    print("完成")
+                    break
         
         return replies
     
