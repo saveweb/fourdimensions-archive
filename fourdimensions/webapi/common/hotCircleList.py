@@ -20,7 +20,7 @@ class hotCircleList:
             r.json()
         
         Raise:
-            CircleFeed.NoContentError
+            hotCircleList.NoContentError
 
         """
 
@@ -42,5 +42,7 @@ class hotCircleList:
 if __name__ == '__main__':
     sess = requests.session()
     sess.headers.update(DEFAULT_HEADER)
-    circlefeed = hotCircleList.get(0, sess=sess)
-    print(circlefeed)
+    circle = hotCircleList.get(0, sess=sess)
+    print(circle)
+    # with open('hotCircleList-demo.json', 'w', encoding='UTF-8') as f:
+    #     json.dump(circle, f, indent=2, ensure_ascii=False)
