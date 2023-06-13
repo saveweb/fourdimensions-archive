@@ -8,7 +8,7 @@ class Follow_List:
     class NoContentError(Exception):
         pass
     @staticmethod
-    def get(uid: int, page: int, follow_type: int, sess: requests.Session):
+    def get(uid: int, page: int, follow_type: int, sess: requests.Session = None):
         """ query https://bcy.net/apiv3/user/follow-list
         
         Args:
