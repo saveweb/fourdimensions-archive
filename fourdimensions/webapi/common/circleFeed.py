@@ -13,7 +13,7 @@ from typing import List
 
 from fourdimensions.webapi.const import DEFAULT_HEADER
 
-class CircleFeed:
+class circleFeed:
     class NoContentError(Exception):
         pass
     @staticmethod
@@ -55,10 +55,30 @@ class CircleFeed:
         if response_json.get('data', {}):
             return response_json
 
-        raise CircleFeed.NoContentError("此页无内容")
+        raise circleFeed.NoContentError("此页无内容")
+    
+    @staticmethod
+    def extract_item_ids(iteminfo: dict) -> List[int]:
+        assert iteminfo.get('data', {}).get('items')
+        item_ids: List[int] = []
+        item_ids.extend([int(item['item_detail']["item_id"]) for item in iteminfo['data']['items']])
+
+        return item_ids
+
+    @staticmethod
+    def extract_uids(iteminfo: dict) -> List[int]:
+        assert iteminfo.get('data', {}).get('items')
+        item_ids: List[int] = []
+        item_ids.extend([int(item['item_detail']["uid"]) for item in iteminfo['data']['items']])
+
+        return item_ids
 
 if __name__ == '__main__':
     sess = requests.session()
     sess.headers.update(DEFAULT_HEADER)
-    circlefeed = CircleFeed.get(48707, since="rec:0", sort_type=1, sess=sess)
+    circlefeed = circleFeed.get(48707, since="rec:0", sort_type=1, sess=sess)
     print(circlefeed)
+    # with open('CircleFeed-demo.json', 'w', encoding='UTF-8') as f:
+    #     json.dump(circlefeed, f, indent=2, ensure_ascii=False)
+    print(circleFeed.extract_item_ids(circlefeed))
+    print(circleFeed.extract_uids(circlefeed))
