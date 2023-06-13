@@ -20,7 +20,7 @@ class hotCircleList:
             r.json()
         
         Raise:
-            CircleFeed.NoContentError
+            hotCircleList.NoContentError
 
         """
 
