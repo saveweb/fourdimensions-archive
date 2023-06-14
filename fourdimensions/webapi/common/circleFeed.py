@@ -23,9 +23,10 @@ class circleFeed:
         Args:
             circle_id: 圈子id
             since: 从这个页面开始
-                   需要注意：第一次查询时不一定为 "rec:0"！
-                   目前只捕获到"rec:2"及以后一些的记录！
-                   务必注意这里的since不是单纯的int，而是"rec:%d"的格式！
+                   需要注意：
+                   sort_type=1时，since的作用相当于page。
+                       务必注意这里的since不是单纯的int，而是"rec:%d"的格式！
+                   sort_type=2时，since是时间戳。和其他需要按时间戳回溯的接口处理方式相同。
             sort_type: 1 - 热门动态
                        2 - 最新动态
             grid_type: 【暂时作用不明】
