@@ -20,3 +20,11 @@ def toOrigin(url: str):
     url = url.replace("://p3-bcy-sign.bcyimg.com/", "://p3-bcy.bcyimg.com/")
     url = re.sub(r"~.*", "~tplv-banciyuan-obj.image", url)
     return url
+
+if __name__ == '__main__':
+    print(
+        toOrigin(
+            "https://p3-bcy-sign.bcyimg.com/banciyuan/user/2353324/item/web/17aqk/54bb4220361a11eba34523c6d1a16ed2.jpg~tplv-banciyuan-4X6.image?x-expires=1702691343&x-signature=Z%2BUNSVwT9KU%2B33DIyYgVtuK8tLs%3D"
+        )
+    )
+
