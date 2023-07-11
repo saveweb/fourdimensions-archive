@@ -3,7 +3,7 @@ import json
 import os
 import shutil
 import time
-from anyio import Path
+from pathlib import Path
 import requests
 from fourdimensions.appapi.item.detail import Detail
 from fourdimensions.utils.image import toOrigin
