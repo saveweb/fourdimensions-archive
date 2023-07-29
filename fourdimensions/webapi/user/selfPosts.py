@@ -47,6 +47,23 @@ class selfPosts:
         assert len(item_ids) == len(set(item_ids))
 
         return item_ids
+    
+    @staticmethod
+    def get_all_items(uid: Union[str, int], sess: requests.Session = None) -> List[dict]:
+        """ 提取用户的全部 items """
+
+        since = 0
+        items: List[dict] = []
+        while True:
+            print(since, end='\r')
+            data = selfPosts.get(uid, since, sess)
+            if not data['data'].get('items'):
+                break
+            since = selfPosts.find_newest_since(data)
+            items.extend(data['data']['items'])
+        # assert len(items) == len(set(items))
+
+        return items
 
 if __name__ == "__main__":
     sess = requests.Session()

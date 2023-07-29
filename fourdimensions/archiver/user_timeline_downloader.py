@@ -4,6 +4,7 @@ import os
 import shutil
 import time
 from pathlib import Path
+from typing import List
 import requests
 from fourdimensions.appapi.item.detail import Detail
 from fourdimensions.utils.image import toOrigin
@@ -27,63 +28,68 @@ def main():
     for uid in users:
         user_path = Path(f'./data/users/{uid}')
         uid = str(uid)
-        if not os.path.exists(user_path / 'item_ids.txt'):
+        if not os.path.exists(user_path / f'uid_{uid}-items.json'):
             sess.headers.update(WEB_HEADER)
-            item_ids = selfPosts.get_all_item_ids(uid=uid, sess=sess)
+            items: List[dict] = selfPosts.get_all_items(uid=uid, sess=sess)
+            os.makedirs(user_path,  exist_ok=True)
+            with open(user_path / f'uid_{uid}-items.json', 'w', encoding='utf-8') as f:
+                json.dump(items, f, ensure_ascii=False, indent=1, separators=(',', ':'))
         else:
-            with open(user_path / 'item_ids.txt', 'r', encoding='utf-8') as f:
-                item_ids = [int(item_id) for item_id in f.read().splitlines()]
-        os.makedirs(user_path,  exist_ok=True)
-        with open(user_path / 'item_ids.txt', 'w', encoding='utf-8') as f:
-            f.write('\n'.join([str(item_id) for item_id in item_ids]))
-        for index, item_id in enumerate(item_ids, 1):
-            print(f"Starting item ({index}/{len(item_ids)}): {item_id}")
+            with open(user_path / f'uid_{uid}-items.json', 'r', encoding='utf-8') as f:
+                items: List[dict] = json.load(f)
+        for item_index, item in enumerate(items, 1):
+            item_detail = item['item_detail']
+            item_id = item_detail["item_id"]
             item_id = str(item_id)
             item_dir = user_path / 'items' / item_id
             item_detail_path = item_dir /f"{item_id}.json"
-            if os.path.exists(item_detail_path):
-                item_detail = json.load(open(item_detail_path, 'r', encoding='utf-8'))
-            else:
-                sess.headers.update(APP_HEADER)
-                item_detail = Detail.get(item_id, sess=sess)
-                os.makedirs(item_dir, exist_ok=True)
-                with open(item_detail_path, 'w', encoding='utf-8') as f:
-                    json.dump(item_detail, f, ensure_ascii=False, indent=1, separators=(',', ':'))
+            if item_detail_path.exists():
+                continue
+            print(f"Starting item ({item_index}/{len(items)}): {item_id}")
+            
             
             # download pic
             sess.headers.update(WEB_HEADER)
             img_url_map = {}
             img_url_map_path = item_dir / 'img_url_map.json'
-            if (not os.path.exists(img_url_map_path)) or True:
-                for index, multi in enumerate(item_detail['data']['multi'], 1):
-                    # TODO: save to file
-                    old_img_fielname_local = item_dir / f'{index}.pic'
-                    img_filename_local = f'{index}.jpg'
+            if (not os.path.exists(img_url_map_path)):
+                _uni_image_list = item_detail['multi']
+                assert isinstance(_uni_image_list, list)
+                _uni_image_list.extend(item_detail['image_list'])
+                _ori_url_added = set()
+                _index = 0
+                for image_detail in _uni_image_list:
+                    _any_url = image_detail['path']
+                    _ori_url = toOrigin(_any_url)
+                    if _ori_url not in _ori_url_added:
+                        _index += 1
+                        _ori_url_added.add(_ori_url)
+                        img_url_map[_any_url] = {
+                            'index': _index,
+                            'ori_url': _ori_url,
+                            'img_filename_local': f'{_index}.jpg',
+                        }
+                if img_url_map:
+                    img_url_map_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(img_url_map_path, 'w', encoding='utf-8') as f:
+                        json.dump(img_url_map, f, ensure_ascii=False, indent=1, separators=(',', ':'))
+
+                for img_ele in img_url_map.values():
+                    item_index:int = img_ele['index']
+                    img_filename_local:str = img_ele['img_filename_local']
                     img_path = item_dir / img_filename_local
-                    if os.path.exists(old_img_fielname_local):
-                        shutil.move(old_img_fielname_local, img_path)
-                    any_url = multi['path']
-                    ori_url = toOrigin(any_url)
+                    _ori_url = img_ele['ori_url']
                     if not os.path.exists(img_path):
-                        r = sess.get(ori_url)
+                        r = sess.get(_ori_url)
                         r.raise_for_status()
 
                         with open(img_path, 'wb') as f:
                             f.write(r.content)
                         ...
 
-                    img_url_map[any_url] = {
-                        'index': index,
-                        'ori_url': ori_url,
-                        'img_filename_local': img_filename_local,
-                    }
-                if img_url_map:
-                    with open(img_url_map_path, 'w', encoding='utf-8') as f:
-                        json.dump(img_url_map, f, ensure_ascii=False, indent=1, separators=(',', ':'))
-
             # download video
-            if item_detail['data']['type'] == 'video':
-                vid = item_detail['data']['video_info']['vid']
+            if item_detail['type'] == 'video':
+                vid = item_detail['video_info']['vid']
                 video_dir = item_dir / "video"
                 video_detail_path = video_dir / f"vid_{vid}.json"
                 if os.path.exists(video_detail_path):
@@ -96,7 +102,7 @@ def main():
                     video_req = sess.get(video_req_url)
                     video_req.raise_for_status()
                     video_detail = video_req.json()
-                    os.makedirs(video_detail_path.parent, exist_ok=True)
+                    video_detail_path.parent.mkdir(parents=True, exist_ok=True)
                     with open(video_detail_path, 'w', encoding='utf-8') as f:
                         json.dump(video_detail, f, ensure_ascii=False, indent=1, separators=(',', ':'))
                 max_size = 0
@@ -130,6 +136,11 @@ def main():
                         print(f"Downloading {item_id} {donwloaded_size}/{max_size}", end='\r')
                         f.write(chunk)
                 # time.sleep(3)
+            
+            if not os.path.exists(item_detail_path):
+                item_detail_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(item_detail_path, 'w', encoding='utf-8') as f:
+                    json.dump(item_detail, f, ensure_ascii=False, indent=1, separators=(',', ':'))
 
 if __name__ == "__main__":
     main()
