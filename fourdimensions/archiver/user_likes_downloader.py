@@ -102,7 +102,7 @@ def main():
         item_ctime_iso = datetime.fromtimestamp(int(item_ctime)).isoformat()
 
         # item_plain = item_detail["origin_item_detail"]["plain"] if item_detail.get("origin_item_detail") else item_plain
-        out_put_text += f"tem_id: {item_id} by {item_uname} at {item_ctime_iso}:\n"
+        out_put_text += f"item_id: {item_id} by {item_uname} at {item_ctime_iso}:\n"
         out_put_text += f"likesdata_source: {current_like_source}\n"
         if item_title := item_detail.get("title", ""):
             out_put_text += f"title: {item_title}\n"
