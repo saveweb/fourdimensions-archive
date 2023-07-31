@@ -129,7 +129,7 @@ def main():
         sess.headers.update(WEB_HEADER)
         img_url_map = {}
         img_url_map_path = item_dir / 'img_url_map.json'
-        if (not os.path.exists(img_url_map_path)):
+        if (not os.path.exists(img_url_map_path)) or REFRESH:
             _uni_image_list = item_detail['multi']
             assert isinstance(_uni_image_list, list)
             if 'image_list' in item_detail:
@@ -147,12 +147,6 @@ def main():
                         'ori_url': _ori_url,
                         'img_filename_local': f'{_index}.jpg',
                     }
-            if img_url_map:
-                out_put_text += f"[实际备份图片数: {len(img_url_map)}]\n"
-                img_url_map_path.parent.mkdir(parents=True, exist_ok=True)
-                with open(img_url_map_path, 'w', encoding='utf-8') as f:
-                    json.dump(img_url_map, f, ensure_ascii=False, indent=1, separators=(',', ':'))
-
             for img_ele in img_url_map.values():
                 item_index:int = img_ele['index']
                 img_filename_local:str = img_ele['img_filename_local']
@@ -164,7 +158,11 @@ def main():
 
                     with open(img_path, 'wb') as f:
                         f.write(r.content)
-                    ...
+            if img_url_map:
+                out_put_text += f"[实际备份图片数: {len(img_url_map)}]\n"
+                img_url_map_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(img_url_map_path, 'w', encoding='utf-8') as f:
+                    json.dump(img_url_map, f, ensure_ascii=False, indent=1, separators=(',', ':'))
 
         # download video
         if item_detail['type'] == 'video':
@@ -200,24 +198,24 @@ def main():
             # 部分视频 size 返回 0
             if os.path.exists(video_path) and (os.path.getsize(video_path) == max_size or max_size == 0):
                 print(f"Skipping {item_id} {max_size}/{max_size}")
-                continue
-            main_url = base64.b64decode(video_detail["video_info"]["data"]["video_list"][best_video_option]["main_url"]).decode('utf-8')
-            sess.headers.update({
-                "User-Agent": "ttplayer(2.9.52.21),AVMDL-1.0.31.1-boringssl-boringssl-ANDROID",
-                "X-MDL-User-Agent": "AVMDL-1.0.31.1-boringssl-boringssl-ANDROID",
-                "X-ReqType": "play",
-                "icy-metadata": "1",
-                "Range": "bytes=0-",
-            })
-            video_req = sess.get(main_url, stream=True)
-            video_req.raise_for_status()
-            with open(video_path, 'wb') as f:
-                donwloaded_size = 0
-                for chunk in video_req.iter_content(chunk_size=1024*1024):
-                    donwloaded_size += len(chunk)
-                    print(f"Downloading {item_id} {donwloaded_size}/{max_size}", end='\r')
-                    f.write(chunk)
-            # time.sleep(3)
+            else: # download
+                main_url = base64.b64decode(video_detail["video_info"]["data"]["video_list"][best_video_option]["main_url"]).decode('utf-8')
+                sess.headers.update({
+                    "User-Agent": "ttplayer(2.9.52.21),AVMDL-1.0.31.1-boringssl-boringssl-ANDROID",
+                    "X-MDL-User-Agent": "AVMDL-1.0.31.1-boringssl-boringssl-ANDROID",
+                    "X-ReqType": "play",
+                    "icy-metadata": "1",
+                    "Range": "bytes=0-",
+                })
+                video_req = sess.get(main_url, stream=True)
+                video_req.raise_for_status()
+                with open(video_path, 'wb') as f:
+                    donwloaded_size = 0
+                    for chunk in video_req.iter_content(chunk_size=1024*1024):
+                        donwloaded_size += len(chunk)
+                        print(f"Downloading {item_id} {donwloaded_size}/{max_size}", end='\r')
+                        f.write(chunk)
+                # time.sleep(3)
         
         if not os.path.exists(item_detail_path):
             item_detail_path.parent.mkdir(parents=True, exist_ok=True)
