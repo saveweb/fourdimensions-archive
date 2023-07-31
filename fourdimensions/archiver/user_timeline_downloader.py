@@ -14,7 +14,7 @@ from fourdimensions.webapi.const import DEFAULT_HEADER as WEB_HEADER
 from fourdimensions.appapi.const import DEFAULT_HEADER as APP_HEADER
 
 users = [
-        "int64",# 此处添加用户 uid
+        "2472140575347111",# 此处添加用户 uid
     ]
 
 

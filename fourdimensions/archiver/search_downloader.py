@@ -75,7 +75,8 @@ def main():
         if (not os.path.exists(img_url_map_path)):
             _uni_image_list = item_detail['multi']
             assert isinstance(_uni_image_list, list)
-            _uni_image_list.extend(item_detail['image_list'])
+            if 'image_list' in item_detail:
+                _uni_image_list.extend(item_detail['image_list'])
             _ori_url_added = set()
             _index = 0
             for image_detail in _uni_image_list:

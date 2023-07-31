@@ -1,80 +1,117 @@
 import base64
 import json
 import os
+import uuid
 import shutil
 import time
 from pathlib import Path
+from typing import List, Union
 import requests
-from fourdimensions.appapi.item.detail import Detail
 from fourdimensions.utils.image import toOrigin
 from fourdimensions.webapi.user.selfPosts import selfPosts
 from fourdimensions.appapi.snssdk import getVideoReqUrl
 from fourdimensions.webapi.const import DEFAULT_HEADER as WEB_HEADER
 from fourdimensions.appapi.const import DEFAULT_HEADER as APP_HEADER
 
+import pymongo
+
+mongo_client = None
+
+def init_mongo_client():
+    global mongo_client
+    if mongo_client is None:
+        mongo_client = pymongo.MongoClient("mongodb://")
+
+def get_item_detail(item_id: Union[str,int]) -> dict:
+    if isinstance(item_id, int):
+        item_id = str(item_id)
+    global mongo_client
+    # db.item.find({
+    #     item_id: item_id
+    # })
+    item = mongo_client.banciyuan.item.find_one({
+        'item_id': item_id
+    })
+    if item is None:
+        raise ValueError(f"item_id {item_id} not found in db")
+    return item['detail']
+
 
 def main():
-    likes_json_file = Path(input("likes-$user-$timestamp.json 的路径:"))
-    user_id = os.path.basename(likes_json_file).split('-')[1]
     sess = requests.Session()
+    init_mongo_client()
     # add a hook to print the url of each request
     def print_request(r, *args, **kwargs):
         print(f"{r.url}")
     sess.hooks['response'].append(print_request)
 
-    with open(likes_json_file, 'r', encoding='utf-8') as f:
-        items = json.load(f)
+    likes_json_file = Path(input("likes-$user-$timestamp.json 的路径:")).expanduser().resolve()
+    user_id = os.path.basename(likes_json_file).split('-')[1]
 
-    likes_path = Path('likes_data')
-    
-    for index, item in enumerate(items, 1):
-        item_id = str(item["item_id"])
-        print(f"Starting item ({index}/{len(items)}): {item_id}")
-        item_dir = likes_path / user_id / 'items' / item_id
+    user_likes_path = Path(f'./data/user_likes/{user_id}')
+   
+    with open(likes_json_file, 'r', encoding='utf-8') as f:
+        items: List[dict] = json.load(f)
+    for item_index, item in enumerate(items, 1):
+        item_id = item["item_id"]
+        item_id = str(item_id)
+        try:
+            item_detail = get_item_detail(item_id)
+        except ValueError as e:
+            print(e)
+            with open("lost_item_ids", "a") as f:
+                f.write(item_id+"\n")
+            item_detail = item
+        item_dir = user_likes_path / 'items' / item_id
         item_detail_path = item_dir /f"{item_id}.json"
-        if os.path.exists(item_detail_path):
-            item_detail = json.load(open(item_detail_path, 'r', encoding='utf-8'))
-        else:
-            sess.headers.update(APP_HEADER)
-            item_detail = Detail.get(item_id, sess=sess)
-            os.makedirs(item_dir, exist_ok=True)
-            with open(item_detail_path, 'w', encoding='utf-8') as f:
-                json.dump(item_detail, f, ensure_ascii=False, indent=1, separators=(',', ':'))
+        if item_detail_path.exists():
+            continue
+        print(f"Starting item ({item_index}/{len(items)}): {item_id}")
+        
         
         # download pic
         sess.headers.update(WEB_HEADER)
         img_url_map = {}
         img_url_map_path = item_dir / 'img_url_map.json'
-        if (not os.path.exists(img_url_map_path)) or True:
-            for index, multi in enumerate(item_detail['data']['multi'], 1):
-                # TODO: save to file
-                old_img_fielname_local = item_dir / f'{index}.pic'
-                img_filename_local = f'{index}.jpg'
+        if (not os.path.exists(img_url_map_path)):
+            _uni_image_list = item_detail['multi']
+            assert isinstance(_uni_image_list, list)
+            if 'image_list' in item_detail:
+                _uni_image_list.extend(item_detail['image_list'])
+            _ori_url_added = set()
+            _index = 0
+            for image_detail in _uni_image_list:
+                _any_url = image_detail['path']
+                _ori_url = toOrigin(_any_url)
+                if _ori_url not in _ori_url_added:
+                    _index += 1
+                    _ori_url_added.add(_ori_url)
+                    img_url_map[_any_url] = {
+                        'index': _index,
+                        'ori_url': _ori_url,
+                        'img_filename_local': f'{_index}.jpg',
+                    }
+            if img_url_map:
+                img_url_map_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(img_url_map_path, 'w', encoding='utf-8') as f:
+                    json.dump(img_url_map, f, ensure_ascii=False, indent=1, separators=(',', ':'))
+
+            for img_ele in img_url_map.values():
+                item_index:int = img_ele['index']
+                img_filename_local:str = img_ele['img_filename_local']
                 img_path = item_dir / img_filename_local
-                if os.path.exists(old_img_fielname_local):
-                    shutil.move(old_img_fielname_local, img_path)
-                any_url = multi['path']
-                ori_url = toOrigin(any_url)
+                _ori_url = img_ele['ori_url']
                 if not os.path.exists(img_path):
-                    r = sess.get(ori_url)
+                    r = sess.get(_ori_url)
                     r.raise_for_status()
 
                     with open(img_path, 'wb') as f:
                         f.write(r.content)
                     ...
 
-                img_url_map[any_url] = {
-                    'index': index,
-                    'ori_url': ori_url,
-                    'img_filename_local': img_filename_local,
-                }
-            if img_url_map:
-                with open(img_url_map_path, 'w', encoding='utf-8') as f:
-                    json.dump(img_url_map, f, ensure_ascii=False, indent=1, separators=(',', ':'))
-
         # download video
-        if item_detail['data']['type'] == 'video':
-            vid = item_detail['data']['video_info']['vid']
+        if item_detail['type'] == 'video':
+            vid = item_detail['video_info']['vid']
             video_dir = item_dir / "video"
             video_detail_path = video_dir / f"vid_{vid}.json"
             if os.path.exists(video_detail_path):
@@ -87,7 +124,7 @@ def main():
                 video_req = sess.get(video_req_url)
                 video_req.raise_for_status()
                 video_detail = video_req.json()
-                os.makedirs(video_detail_path.parent, exist_ok=True)
+                video_detail_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(video_detail_path, 'w', encoding='utf-8') as f:
                     json.dump(video_detail, f, ensure_ascii=False, indent=1, separators=(',', ':'))
             max_size = 0
@@ -121,6 +158,11 @@ def main():
                     print(f"Downloading {item_id} {donwloaded_size}/{max_size}", end='\r')
                     f.write(chunk)
             # time.sleep(3)
+        
+        if not os.path.exists(item_detail_path):
+            item_detail_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(item_detail_path, 'w', encoding='utf-8') as f:
+                json.dump(item_detail, f, ensure_ascii=False, indent=1, separators=(',', ':'))
 
 if __name__ == "__main__":
     main()
