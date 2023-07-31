@@ -91,6 +91,7 @@ def main():
                 f.write(item_id+"\n")
             item_detail = item
         item_dir = user_likes_path / f'{current_like_source}-items' / item_id
+        item_dir.mkdir(parents=True, exist_ok=True)
         item_detail_path = item_dir /f"{item_id}.json"
         if item_detail_path.exists() and (not REFRESH):
             continue
@@ -160,7 +161,6 @@ def main():
                         f.write(r.content)
             if img_url_map:
                 out_put_text += f"[实际备份图片数: {len(img_url_map)}]\n"
-                img_url_map_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(img_url_map_path, 'w', encoding='utf-8') as f:
                     json.dump(img_url_map, f, ensure_ascii=False, indent=1, separators=(',', ':'))
 
