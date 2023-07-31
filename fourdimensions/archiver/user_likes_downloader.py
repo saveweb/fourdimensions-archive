@@ -34,6 +34,9 @@ def get_item_detail(item_id: Union[str,int]) -> dict:
     })
     if item is None:
         raise ValueError(f"item_id {item_id} not found in db")
+    if item.get('detail_fullfix', {}).get('status', 0) == 4000:
+        if item['detail_fullfix']['message'] == '阿拉，请先登录半次元':
+            del item['detail_fullfix'] # 错的 fullfix, 删除
     return item['detail'] if 'detail_fullfix' not in item else item['detail_fullfix']
 
 REFRESH = True
