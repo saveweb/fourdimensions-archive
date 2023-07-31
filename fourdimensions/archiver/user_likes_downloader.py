@@ -34,7 +34,7 @@ def get_item_detail(item_id: Union[str,int]) -> dict:
     })
     if item is None:
         raise ValueError(f"item_id {item_id} not found in db")
-    return item['detail']
+    return item['detail'] if 'detail_fullfix' not in item else item['detail_fullfix']
 
 REFRESH = True
 def main():
