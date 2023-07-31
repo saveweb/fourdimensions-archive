@@ -194,7 +194,8 @@ def main():
             assert best_video_option is not None
             out_put_text += f"[视频 {max_size // 1024}KiB]\n"
             video_path = video_dir / f"vid_{vid}.mp4"
-            if os.path.exists(video_path) and os.path.getsize(video_path) == max_size:
+            # 部分视频 size 返回 0
+            if os.path.exists(video_path) and (os.path.getsize(video_path) == max_size or max_size == 0):
                 print(f"Skipping {item_id} {max_size}/{max_size}")
                 continue
             main_url = base64.b64decode(video_detail["video_info"]["data"]["video_list"][best_video_option]["main_url"]).decode('utf-8')
