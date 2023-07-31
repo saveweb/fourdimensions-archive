@@ -94,7 +94,7 @@ def main():
         print(f"Starting item ({item_index}/{len(items)}): {item_id}")
 
         item_ctime = item_detail["ctime"]
-        item_uname = item_detail["uname"]
+        item_uname = item_detail["profile"]["uname"] if item_detail.get("profile") else item_detail["uname"]
         item_ctime_iso = datetime.fromtimestamp(int(item_ctime)).isoformat()
 
         # item_plain = item_detail["origin_item_detail"]["plain"] if item_detail.get("origin_item_detail") else item_plain
