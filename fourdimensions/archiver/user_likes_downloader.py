@@ -181,7 +181,7 @@ def main():
                 video_detail_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(video_detail_path, 'w', encoding='utf-8') as f:
                     json.dump(video_detail, f, ensure_ascii=False, indent=1, separators=(',', ':'))
-            max_size = 0
+            max_size = -1
             best_video_option = None
             if video_detail["video_info"]["data"]["message"] == "未通过审核，视频无法播放":
                 print(f"Skipping {item_id} {video_detail['video_info']['data']['message']}")
